@@ -258,6 +258,47 @@
         </div>
       </div>
     </section>
+    <section class="section">
+  <div class="container">
+    <h2>Stay Informed</h2>
+    <p class="section-lead">
+      Enter your email to receive occasional updates about food allergy awareness,
+      langar safety, and community inclusion.
+    </p>
+
+    <div class="prose">
+      <form id="newsletter-form">
+        <label for="subscriber_email" style="display:block; margin-bottom:6px;">
+          Email address
+        </label>
+
+        <input
+          id="subscriber_email"
+          name="subscriber_email"
+          type="email"
+          required
+          placeholder="you@example.com"
+          style="
+            width:100%;
+            padding:12px;
+            border-radius:12px;
+            border:1px solid var(--border);
+            background:rgba(255,255,255,.06);
+            color:var(--text);
+            margin-bottom:12px;
+          "
+        />
+
+        <button class="button" type="submit">
+          Sign up for updates
+        </button>
+
+        <p id="form-status" class="small" style="margin-top:10px;"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
   </main>
 
   <footer class="site-footer">
@@ -270,5 +311,47 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // REQUIRED: replace these three values
+  const EMAILJS_PUBLIC_KEY = "PASTE_PUBLIC_KEY_HERE";
+  const EMAILJS_TEMPLATE_ID = "PASTE_TEMPLATE_ID_HERE";
+
+  // Your working Google Sheets endpoint (already correct)
+  const GOOGLE_SHEETS_URL =
+    "https://script.google.com/macros/s/AKfycbwhv39JkLItD-BkCXtOSCOL4RA2xNZiRRPyHxHMou7u--Xl8CL1IjKm2kuKE3u4hTU9_w/exec";
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+
+  const form = document.getElementById("newsletter-form");
+  const statusEl = document.getElementById("form-status");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    statusEl.textContent = "Submitting...";
+
+    try {
+      // 1) Save email to Google Sheets
+      await fetch(GOOGLE_SHEETS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `subscriber_email=${encodeURIComponent(form.subscriber_email.value)}`
+      });
+
+      // 2) Send EmailJS notification
+      await emailjs.sendForm(
+        "service_1s1exn6",
+        EMAILJS_TEMPLATE_ID,
+        form
+      );
+
+      statusEl.textContent = "Thanks! You’re signed up.";
+      form.reset();
+    } catch {
+      statusEl.textContent = "Something went wrong. Please try again.";
+    }
+  });
+</script>
 </body>
 </html>
