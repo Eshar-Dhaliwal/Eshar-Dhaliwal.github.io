@@ -258,46 +258,37 @@
         </div>
       </div>
     </section>
+
     <section class="section">
-  <div class="container">
-    <h2>Stay Informed</h2>
-    <p class="section-lead">
-      Enter your email to receive occasional updates about food allergy awareness,
-      langar safety, and community inclusion.
-    </p>
+      <div class="container">
+        <h2>Stay Informed</h2>
+        <p class="section-lead">
+          Enter your email to receive occasional updates about food allergy awareness,
+          langar safety, and community inclusion.
+        </p>
 
-    <div class="prose">
-      <form id="newsletter-form">
-        <label for="subscriber_email" style="display:block; margin-bottom:6px;">
-          Email address
-        </label>
+        <div class="prose">
+          <form id="newsletter-form" novalidate>
+            <label for="subscriber_email" style="display:block; margin-bottom:6px;">Email address</label>
 
-        <input
-          id="subscriber_email"
-          name="subscriber_email"
-          type="email"
-          required
-          placeholder="you@example.com"
-          style="
-            width:100%;
-            padding:12px;
-            border-radius:12px;
-            border:1px solid var(--border);
-            background:rgba(255,255,255,.06);
-            color:var(--text);
-            margin-bottom:12px;
-          "
-        />
+            <input
+              id="subscriber_email"
+              name="subscriber_email"
+              type="email"
+              required
+              placeholder="you@example.com"
+              autocomplete="email"
+              inputmode="email"
+              style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); background:rgba(255,255,255,.06); color:var(--text); margin-bottom:12px;"
+            />
 
-        <button class="button" type="submit">
-          Sign up for updates
-        </button>
+            <button class="button" type="submit">Sign up for updates</button>
 
-        <p id="form-status" class="small" style="margin-top:10px;"></p>
-      </form>
-    </div>
-  </div>
-</section>
+            <p id="form-status" class="small" style="margin-top:10px;" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
 
   </main>
 
@@ -311,47 +302,47 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
-  // REQUIRED: replace these three values
-  const EMAILJS_PUBLIC_KEY = "PASTE_PUBLIC_KEY_HERE";
-  const EMAILJS_TEMPLATE_ID = "PASTE_TEMPLATE_ID_HERE";
 
-  // Your working Google Sheets endpoint (already correct)
-  const GOOGLE_SHEETS_URL =
-    "https://script.google.com/macros/s/AKfycbwhv39JkLItD-BkCXtOSCOL4RA2xNZiRRPyHxHMou7u--Xl8CL1IjKm2kuKE3u4hTU9_w/exec";
+  <script>
+    // Newsletter signup: saves the email to Google Sheets via your Apps Script web app.
+    // That sheet then syncs to Brevo via Zapier.
+    const NEWSLETTER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwhv39JkLItD-BkCXtOSCOL4RA2xNZiRRPyHxHMou7u--Xl8CL1IjKm2kuKE3u4hTU9_w/exec';
 
-  emailjs.init(EMAILJS_PUBLIC_KEY);
+    const newsletterForm = document.getElementById('newsletter-form');
+    const newsletterStatus = document.getElementById('form-status');
 
-  const form = document.getElementById("newsletter-form");
-  const statusEl = document.getElementById("form-status");
+    if (newsletterForm) {
+      newsletterForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-    statusEl.textContent = "Submitting...";
+        const emailEl = document.getElementById('subscriber_email');
+        const email = (emailEl?.value || '').trim();
 
-    try {
-      // 1) Save email to Google Sheets
-      await fetch(GOOGLE_SHEETS_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `subscriber_email=${encodeURIComponent(form.subscriber_email.value)}`
+        // Basic client-side validation (keeps UX clean; backend still accepts/filters)
+        if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+          newsletterStatus.textContent = 'Please enter a valid email.';
+          return;
+        }
+
+        newsletterStatus.textContent = 'Submitting...';
+
+        try {
+          // no-cors is used because Apps Script web apps often do not send CORS headers.
+          await fetch(NEWSLETTER_ENDPOINT, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'subscriber_email=' + encodeURIComponent(email)
+          });
+
+          newsletterStatus.textContent = 'Thanks! You're signed up.';
+          newsletterForm.reset();
+        } catch (err) {
+          newsletterStatus.textContent = 'Something went wrong. Please try again.';
+        }
       });
-
-      // 2) Send EmailJS notification
-      await emailjs.sendForm(
-        "service_1s1exn6",
-        EMAILJS_TEMPLATE_ID,
-        form
-      );
-
-      statusEl.textContent = "Thanks! You’re signed up.";
-      form.reset();
-    } catch {
-      statusEl.textContent = "Something went wrong. Please try again.";
     }
-  });
-</script>
+  </script>
+
 </body>
 </html>
