@@ -268,3 +268,24 @@ a:hover{text-decoration:underline}
     padding:10px;
   }
 }
+/* FINAL OVERRIDE: food images show more of the photo */
+.card-media {
+  height: 240px;
+  padding: 14px;
+  background: rgba(255,255,255,.04);
+}
+
+.card-media img {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain !important;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .card-media {
+    height: 200px;
+    padding: 12px;
+  }
+}
