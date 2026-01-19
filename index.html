@@ -304,45 +304,40 @@
   </script>
 
   <script>
-    // Newsletter signup: saves the email to Google Sheets via your Apps Script web app.
-    // That sheet then syncs to Brevo via Zapier.
-    const NEWSLETTER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwhv39JkLItD-BkCXtOSCOL4RA2xNZiRRPyHxHMou7u--Xl8CL1IjKm2kuKE3u4hTU9_w/exec';
+  const NEWSLETTER_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwhv39JkLItD-BkCXtOSCOL4RA2xNZiRRPyHxHMou7u--Xl8CL1IjKm2kuKE3u4hTU9_w/exec';
 
-    const newsletterForm = document.getElementById('newsletter-form');
-    const newsletterStatus = document.getElementById('form-status');
+  const newsletterForm = document.getElementById('newsletter-form');
+  const newsletterStatus = document.getElementById('form-status');
 
-    if (newsletterForm) {
-      newsletterForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-        const emailEl = document.getElementById('subscriber_email');
-        const email = (emailEl?.value || '').trim();
+      const emailEl = document.getElementById('subscriber_email');
+      const email = (emailEl?.value || '').trim();
 
-        // Basic client-side validation (keeps UX clean; backend still accepts/filters)
-        if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-          newsletterStatus.textContent = 'Please enter a valid email.';
-          return;
-        }
+      if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+        newsletterStatus.textContent = 'Please enter a valid email.';
+        return;
+      }
 
-        newsletterStatus.textContent = 'Submitting...';
+      newsletterStatus.textContent = 'Submitting...';
 
-        try {
-          // no-cors is used because Apps Script web apps often do not send CORS headers.
-          await fetch(NEWSLETTER_ENDPOINT, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'subscriber_email=' + encodeURIComponent(email)
-          });
+      try {
+        await fetch(NEWSLETTER_ENDPOINT, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'subscriber_email=' + encodeURIComponent(email)
+        });
 
-          newsletterStatus.textContent = 'Thanks! You're signed up.';
-          newsletterForm.reset();
-        } catch (err) {
-          newsletterStatus.textContent = 'Something went wrong. Please try again.';
-        }
-      });
-    }
-  </script>
-
+        newsletterStatus.textContent = "Thanks! You're signed up.";
+        newsletterForm.reset();
+      } catch (err) {
+        newsletterStatus.textContent = 'Something went wrong. Please try again.';
+      }
+    });
+  }
+</script>
 </body>
 </html>
