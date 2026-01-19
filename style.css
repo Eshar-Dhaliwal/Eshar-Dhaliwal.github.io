@@ -285,3 +285,14 @@ a:hover{text-decoration:underline}
     height: 150px;
   }
 }
+/* Food card image container */
+.card-media {
+  height: 200px;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .card-media {
+    height: 160px;
+  }
+}
