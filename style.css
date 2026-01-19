@@ -1,4 +1,3 @@
-
 :root{
   --bg:#0b1220;
   --surface:#0f172a;
@@ -173,13 +172,29 @@ a:hover{text-decoration:underline}
   background: rgba(255,255,255,.04);
   box-shadow: var(--shadow);
 }
+
+/* Food image frame: shows full image cleanly (no ugly cropping) */
 .card-media{
-  height:120px;
+  height:220px;
   background: rgba(255,255,255,.06);
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:12px;
 }
+.card-media img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  display:block;
+}
+.card-media.has-image{
+  background: rgba(255,255,255,.06);
+}
+.card-media.has-image .media-placeholder{
+  display:none;
+}
+
 .media-placeholder{
   font-weight:800;
   letter-spacing:.4px;
@@ -190,6 +205,7 @@ a:hover{text-decoration:underline}
   padding:10px 12px;
   border-radius:12px;
 }
+
 .card-body{padding:14px 14px 16px}
 .card h3{margin:0 0 10px; font-size:20px}
 .meta-label{font-size:12px; color:rgba(229,231,235,.7); text-transform:uppercase; letter-spacing:.18em}
@@ -231,25 +247,7 @@ a:hover{text-decoration:underline}
   .nav{justify-content:flex-start}
 }
 
-/* --- Added: Food images + mobile polish (keeps original style) --- */
-.card-media{
-  position:relative;
-  padding:0;
-}
-.card-media img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-.card-media.has-image{
-  background:transparent;
-}
-.card-media.has-image .media-placeholder{
-  display:none;
-}
-
-/* Smaller screens: make header/nav wrap cleanly */
+/* Smaller screens: header/nav wrap cleanly + image height */
 @media (max-width: 600px){
   .header-inner{
     flex-direction:column;
@@ -264,35 +262,9 @@ a:hover{text-decoration:underline}
     width:100%;
   }
   .hero{padding-top:26px}
-  .card-media{height:140px}
-}
-/* Food card images: edge-to-edge with minimal cropping */
-.card-media {
-  height: 180px;
-  overflow: hidden;
-}
 
-.card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-/* Mobile tuning */
-@media (max-width: 640px) {
-  .card-media {
-    height: 150px;
-  }
-}
-/* Food card image container */
-.card-media {
-  height: 200px;
-  overflow: hidden;
-}
-
-@media (max-width: 640px) {
-  .card-media {
-    height: 160px;
+  .card-media{
+    height:180px;
+    padding:10px;
   }
 }
